@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finska Quiz Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .category-selection {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .category-selection h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        
+        .category-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .category-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 25px 40px;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .category-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .category-btn.boating {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+        }
+        
+        .category-btn.fishing {
+            background: linear-gradient(135deg, #00BCD4, #0097A7);
+        }
+        
+        .category-btn.soccer {
+            background: linear-gradient(135deg, #4CAF50, #388E3C);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            height: 12px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .question-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .category-tag {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: #333;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: white;
+            color: #333;
+        }
+        
+        .finnish-word {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .pronunciation {
+            font-size: 1.2rem;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        
+        .question {
+            font-size: 1.3rem;
+            color: #444;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .option-btn {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 3px solid transparent;
+            padding: 18px 25px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border-color: #2196F3;
+        }
+        
+        .option-btn.correct {
+            background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+            border-color: #4CAF50;
+            animation: correctPulse 0.6s ease-out;
+        }
+        
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+            border-color: #f44336;
+            animation: incorrectShake 0.6s ease-out;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .completion-screen {
+            display: none;
+            text-align: center;
+            color: white;
+        }
+        
+        .completion-screen.show {
+            display: block;
+        }
+        
+        .completion-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .completion-stats {
+            background: rgba(255,255,255,0.15);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .accuracy-reveal {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .accuracy-excellent { color: #4CAF50; }
+        .accuracy-good { color: #FFC107; }
+        .accuracy-okay { color: #FF9800; }
+        .accuracy-practice { color: #FF5722; }
+        
+        .restart-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .feedback.show {
+            opacity: 1;
+        }
+        
+        .feedback.correct {
+            color: #4CAF50;
+        }
+        
+        .feedback.incorrect {
+            color: #f44336;
+        }
+        
+        @media (max-width: 600px) {
+            .finnish-word {
+                font-size: 2.5rem;
+            }
+            
+            .question-card {
+                padding: 30px 20px;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇫🇮 Finska Quiz Game</h1>
+            <p id="headerSubtitle">Välj din kategori</p>
+        </div>
+        
+        <div id="categoryScreen" class="category-selection">
+            <h2>Välj en kategori</h2>
+            <div class="category-buttons">
+                <button class="category-btn boating" onclick="selectCategory('boating')">
+                    ⛵ Båtsport & Segling
+                </button>
+                <button class="category-btn fishing" onclick="selectCategory('fishing')">
+                    🎣 Fiske
+                </button>
+                <button class="category-btn soccer" onclick="selectCategory('soccer')">
+                    ⚽ Fotboll
+                </button>
+            </div>
+        </div>
+        
+        <div id="gameScreen" style="display: none;">
+            <div class="category-header">
+                <button class="back-btn" onclick="showCategorySelection()">← Tillbaka till kategorier</button>
+                <div></div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="cardsRemaining">50</div>
+                    <div class="stat-label">Kort kvar</div>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="question-card">
+                <div class="category-tag" id="categoryTag"></div>
+                <div class="finnish-word" id="finnishWord"></div>
+                <div class="pronunciation" id="pronunciation"></div>
+                <div class="question">Vad betyder detta på svenska?</div>
+                
+                <div class="options" id="optionsContainer">
+                    <button class="option-btn" onclick="selectAnswer(0)" id="option0"></button>
+                    <button class="option-btn" onclick="selectAnswer(1)" id="option1"></button>
+                    <button class="option-btn" onclick="selectAnswer(2)" id="option2"></button>
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+        
+        <div class="completion-screen" id="completionScreen">
+            <div class="completion-title">🎉 Hyvä! 🎉</div>
+            <div class="completion-stats">
+                <h2>Quiz klart!</h2>
+                <p id="completionMessage">Du har mästrat alla 50 ord!</p>
+                
+                <div class="accuracy-reveal" id="accuracyReveal"></div>
+                
+                <div style="margin: 20px 0; font-size: 1.2rem;">
+                    <strong>Dina slutresultat:</strong><br>
+                    Totalt antal gissningar: <span id="finalGuesses"></span><br>
+                    Rätta svar: <span id="finalCorrect"></span><br>
+                    Ord mästrade: 50/50
+                </div>
+                <p id="performanceMessage"></p>
+            </div>
+            <button class="restart-btn" onclick="restartCurrentCategory()">Träna igen</button>
+            <button class="restart-btn" onclick="showCategorySelection()">Välj ny kategori</button>
+        </div>
+    </div>
+
+    <script>
+        const vocabularies = {
+            boating: [
+                {finnish: "vene", swedish: "båt", category: "Båtsport", pronunciation: "VEH-neh"},
+                {finnish: "purjehtia", swedish: "segla", category: "Båtsport", pronunciation: "PUR-yeh-ti-ah"},
+                {finnish: "purjehdus", swedish: "segling", category: "Båtsport", pronunciation: "PUR-yeh-dus"},
+                {finnish: "satama", swedish: "hamn", category: "Båtsport", pronunciation: "SAH-tah-mah"},
+                {finnish: "laituri", swedish: "kaj", category: "Båtsport", pronunciation: "LIE-tu-ri"},
+                {finnish: "ankkuri", swedish: "ankare", category: "Båtsport", pronunciation: "AHNK-ku-ri"},
+                {finnish: "purje", swedish: "segel", category: "Båtsport", pronunciation: "PUR-yeh"},
+                {finnish: "masto", swedish: "mast", category: "Båtsport", pronunciation: "MAHS-to"},
+                {finnish: "peräsin", swedish: "roder", category: "Båtsport", pronunciation: "PEH-ra-sin"},
+                {finnish: "aalto", swedish: "våg", category: "Båtsport", pronunciation: "AHL-to"},
+                {finnish: "tuuli", swedish: "vind", category: "Båtsport", pronunciation: "TUU-li"},
+                {finnish: "myrsky", swedish: "storm", category: "Båtsport", pronunciation: "MYR-sky"},
+                {finnish: "kapteeni", swedish: "kapten", category: "Båtsport", pronunciation: "kahp-TEE-ni"},
+                {finnish: "miehistö", swedish: "besättning", category: "Båtsport", pronunciation: "MIEH-his-tur"},
+                {finnish: "kansi", swedish: "däck", category: "Båtsport", pronunciation: "KAHN-si"},
+                {finnish: "hytti", swedish: "hytt", category: "Båtsport", pronunciation: "HYT-ti"},
+                {finnish: "köli", swedish: "köl", category: "Båtsport", pronunciation: "KUR-li"},
+                {finnish: "keula", swedish: "för", category: "Båtsport", pronunciation: "KEU-lah"},
+                {finnish: "perä", swedish: "akter", category: "Båtsport", pronunciation: "PEH-ra"},
+                {finnish: "paapuuri", swedish: "babord", category: "Båtsport", pronunciation: "PAH-puu-ri"},
+                {finnish: "tyyrpuuri", swedish: "styrbord", category: "Båtsport", pronunciation: "TYYR-puu-ri"},
+                {finnish: "moottori", swedish: "motor", category: "Båtsport", pronunciation: "MOHT-to-ri"},
+                {finnish: "potkuri", swedish: "propeller", category: "Båtsport", pronunciation: "POT-ku-ri"},
+                {finnish: "polttoaine", swedish: "bränsle", category: "Båtsport", pronunciation: "POLT-to-ai-neh"},
+                {finnish: "kompassi", swedish: "kompass", category: "Båtsport", pronunciation: "KOM-pahs-si"},
+                {finnish: "kartta", swedish: "karta", category: "Båtsport", pronunciation: "KAHR-tah"},
+                {finnish: "navigoida", swedish: "navigera", category: "Båtsport", pronunciation: "nah-vi-GOI-dah"},
+                {finnish: "kurssi", swedish: "kurs", category: "Båtsport", pronunciation: "KURS-si"},
+                {finnish: "vauhti", swedish: "fart", category: "Båtsport", pronunciation: "VAU-ti"},
+                {finnish: "solmu", swedish: "knop", category: "Båtsport", pronunciation: "SOL-mu"},
+                {finnish: "syvyys", swedish: "djup", category: "Båtsport", pronunciation: "SY-vyys"},
+                {finnish: "matala", swedish: "grund", category: "Båtsport", pronunciation: "MAH-tah-lah"},
+                {finnish: "riutta", swedish: "rev", category: "Båtsport", pronunciation: "RIUT-tah"},
+                {finnish: "majakka", swedish: "fyr", category: "Båtsport", pronunciation: "MAH-yahk-kah"},
+                {finnish: "poiju", swedish: "boj", category: "Båtsport", pronunciation: "POI-yu"},
+                {finnish: "köysi", swedish: "rep", category: "Båtsport", pronunciation: "KUR-si"},
+                {finnish: "solmu", swedish: "knut", category: "Båtsport", pronunciation: "SOL-mu"},
+                {finnish: "kiinnittää", swedish: "förtöja", category: "Båtsport", pronunciation: "KIIN-nit-ta"},
+                {finnish: "irrottaa", swedish: "lossa", category: "Båtsport", pronunciation: "IR-rot-taa"},
+                {finnish: "pelastusvene", swedish: "livbåt", category: "Båtsport", pronunciation: "PEH-las-tus-veh-neh"},
+                {finnish: "pelastusliivi", swedish: "flytväst", category: "Båtsport", pronunciation: "PEH-las-tus-lii-vi"},
+                {finnish: "hätäraketti", swedish: "nödraket", category: "Båtsport", pronunciation: "HA-ta-rah-ket-ti"},
+                {finnish: "radio", swedish: "radio", category: "Båtsport", pronunciation: "RAH-di-o"},
+                {finnish: "pelastus", swedish: "räddning", category: "Båtsport", pronunciation: "PEH-las-tus"},
+                {finnish: "merisairas", swedish: "sjösjuk", category: "Båtsport", pronunciation: "MEH-ri-sai-rahs"},
+                {finnish: "laivassa", swedish: "ombord", category: "Båtsport", pronunciation: "LAI-vahs-sah"},
+                {finnish: "maihin", swedish: "i land", category: "Båtsport", pronunciation: "MAI-hin"},
+                {finnish: "merimies", swedish: "sjöman", category: "Båtsport", pronunciation: "MEH-ri-mieh-s"},
+                {finnish: "venesatama", swedish: "marina", category: "Båtsport", pronunciation: "VEH-neh-sah-tah-mah"},
+                {finnish: "vedenpitävä", swedish: "vattentät", category: "Båtsport", pronunciation: "VEH-den-pi-ta-va"},
+                {finnish: "vuoto", swedish: "läcka", category: "Båtsport", pronunciation: "VUO-to"}
+            ],
+            fishing: [
+                {finnish: "kalastaa", swedish: "fiska", category: "Fiske", pronunciation: "KAH-lahs-taa"},
+                {finnish: "kala", swedish: "fisk", category: "Fiske", pronunciation: "KAH-lah"},
+                {finnish: "kalastaja", swedish: "fiskare", category: "Fiske", pronunciation: "KAH-lahs-tah-yah"},
+                {finnish: "vapa", swedish: "metspö", category: "Fiske", pronunciation: "VAH-pah"},
+                {finnish: "kela", swedish: "rulle", category: "Fiske", pronunciation: "KEH-lah"},
+                {finnish: "siima", swedish: "lina", category: "Fiske", pronunciation: "SII-mah"},
+                {finnish: "koukku", swedish: "krok", category: "Fiske", pronunciation: "KOU-ku"},
+                {finnish: "kelluke", swedish: "flöte", category: "Fiske", pronunciation: "KEL-lu-keh"},
+                {finnish: "uistin", swedish: "drag", category: "Fiske", pronunciation: "UIS-tin"},
+                {finnish: "syötti", swedish: "bete", category: "Fiske", pronunciation: "SYUR-ti"},
+                {finnish: "mato", swedish: "mask", category: "Fiske", pronunciation: "MAH-to"},
+                {finnish: "rapu", swedish: "kräfta", category: "Fiske", pronunciation: "RAH-pu"},
+                {finnish: "hummeri", swedish: "hummer", category: "Fiske", pronunciation: "HUM-meh-ri"},
+                {finnish: "verkko", swedish: "nät", category: "Fiske", pronunciation: "VERK-ko"},
+                {finnish: "heittää", swedish: "kasta", category: "Fiske", pronunciation: "HEIT-ta"},
+                {finnish: "syöntivire", swedish: "napp", category: "Fiske", pronunciation: "SYURN-ti-vi-reh"},
+                {finnish: "tartuttaa", swedish: "få på kroken", category: "Fiske", pronunciation: "TAR-tut-taa"},
+                {finnish: "vetää ylös", swedish: "dra upp", category: "Fiske", pronunciation: "VEH-ta YLUR-s"},
+                {finnish: "iso", swedish: "stor", category: "Fiske", pronunciation: "I-so"},
+                {finnish: "pieni", swedish: "liten", category: "Fiske", pronunciation: "PIEH-ni"},
+                {finnish: "ahven", swedish: "abborre", category: "Fiske", pronunciation: "AH-ven"},
+                {finnish: "hauki", swedish: "gädda", category: "Fiske", pronunciation: "HAU-ki"},
+                {finnish: "lohi", swedish: "lax", category: "Fiske", pronunciation: "LO-hi"},
+                {finnish: "taimen", swedish: "öring", category: "Fiske", pronunciation: "TAI-men"},
+                {finnish: "silli", swedish: "sill", category: "Fiske", pronunciation: "SIL-li"},
+                {finnish: "turska", swedish: "torsk", category: "Fiske", pronunciation: "TUR-skah"},
+                {finnish: "makrilli", swedish: "makrill", category: "Fiske", pronunciation: "mah-KRIL-li"},
+                {finnish: "ankerias", swedish: "ål", category: "Fiske", pronunciation: "AHN-keh-ri-ahs"},
+                {finnish: "lahna", swedish: "braxen", category: "Fiske", pronunciation: "LAH-nah"},
+                {finnish: "särki", swedish: "mört", category: "Fiske", pronunciation: "SAR-ki"},
+                {finnish: "järvi", swedish: "sjö", category: "Fiske", pronunciation: "YAR-vi"},
+                {finnish: "joki", swedish: "älv", category: "Fiske", pronunciation: "YO-ki"},
+                {finnish: "puro", swedish: "bäck", category: "Fiske", pronunciation: "PU-ro"},
+                {finnish: "ranta", swedish: "strand", category: "Fiske", pronunciation: "RAHN-tah"},
+                {finnish: "syvä", swedish: "djup", category: "Fiske", pronunciation: "SY-va"},
+                {finnish: "matala", swedish: "grund", category: "Fiske", pronunciation: "MAH-tah-lah"},
+                {finnish: "avanto", swedish: "vak", category: "Fiske", pronunciation: "AH-vahn-to"},
+                {finnish: "pilkkiminen", swedish: "pimpelfiske", category: "Fiske", pronunciation: "PILK-ki-mi-nen"},
+                {finnish: "haavi", swedish: "håv", category: "Fiske", pronunciation: "HAH-vi"},
+                {finnish: "vapavälinelaatikko", swedish: "låda", category: "Fiske", pronunciation: "VAH-pah-va-li-neh-laht-tik-ko"},
+                {finnish: "perkata", swedish: "rensa", category: "Fiske", pronunciation: "PER-kah-tah"},
+                {finnish: "suomut", swedish: "fjäll", category: "Fiske", pronunciation: "SUO-mut"},
+                {finnish: "fileoida", swedish: "filé", category: "Fiske", pronunciation: "FI-leh-oi-dah"},
+                {finnish: "grillata", swedish: "grilla", category: "Fiske", pronunciation: "GRIL-lah-tah"},
+                {finnish: "savustaa", swedish: "röka", category: "Fiske", pronunciation: "SAH-vus-taa"},
+                {finnish: "suola", swedish: "salt", category: "Fiske", pronunciation: "SUO-lah"},
+                {finnish: "tuore", swedish: "färsk", category: "Fiske", pronunciation: "TUO-reh"},
+                {finnish: "lupa", swedish: "licens", category: "Fiske", pronunciation: "LU-pah"},
+                {finnish: "kausi", swedish: "säsong", category: "Fiske", pronunciation: "KAU-si"},
+                {finnish: "rauhoitusaika", swedish: "fredningstid", category: "Fiske", pronunciation: "RAU-hoi-tus-ai-kah"}
+            ],
+            soccer: [
+                {finnish: "jalkapallo", swedish: "fotboll", category: "Fotboll", pronunciation: "YAHL-kah-pahl-lo"},
+                {finnish: "pelaaja", swedish: "spelare", category: "Fotboll", pronunciation: "PEH-lah-yah"},
+                {finnish: "joukkue", swedish: "lag", category: "Fotboll", pronunciation: "YOUK-kueh"},
+                {finnish: "ottelu", swedish: "match", category: "Fotboll", pronunciation: "OT-teh-lu"},
+                {finnish: "kenttä", swedish: "plan", category: "Fotboll", pronunciation: "KENT-ta"},
+                {finnish: "pallo", swedish: "boll", category: "Fotboll", pronunciation: "PAHL-lo"},
+                {finnish: "maali", swedish: "mål", category: "Fotboll", pronunciation: "MAH-li"},
+                {finnish: "maalivahti", swedish: "målvakt", category: "Fotboll", pronunciation: "MAH-li-vah-ti"},
+                {finnish: "puolustaja", swedish: "försvarare", category: "Fotboll", pronunciation: "PUO-lus-tah-yah"},
+                {finnish: "keskikenttäpelaaja", swedish: "mittfältare", category: "Fotboll", pronunciation: "KES-ki-kent-ta-peh-lah-yah"},
+                {finnish: "hyökkääjä", swedish: "anfallare", category: "Fotboll", pronunciation: "HYUR-ka-yah"},
+                {finnish: "tuomari", swedish: "domare", category: "Fotboll", pronunciation: "TUO-mah-ri"},
+                {finnish: "sivutuomari", swedish: "linjedomare", category: "Fotboll", pronunciation: "SI-vu-tuo-mah-ri"},
+                {finnish: "potku", swedish: "spark", category: "Fotboll", pronunciation: "POT-ku"},
+                {finnish: "syöttö", swedish: "pass", category: "Fotboll", pronunciation: "SYURT-tur"},
+                {finnish: "laukaus", swedish: "skott", category: "Fotboll", pronunciation: "LAU-kaus"},
+                {finnish: "pääpallo", swedish: "nick", category: "Fotboll", pronunciation: "PAA-pahl-lo"},
+                {finnish: "taklaus", swedish: "tackling", category: "Fotboll", pronunciation: "TAHK-laus"},
+                {finnish: "kuljetus", swedish: "dribbling", category: "Fotboll", pronunciation: "KUL-yeh-tus"},
+                {finnish: "kulma", swedish: "hörna", category: "Fotboll", pronunciation: "KUL-mah"},
+                {finnish: "vapaapotkua", swedish: "frispark", category: "Fotboll", pronunciation: "VAH-paa-pot-ku"},
+                {finnish: "rangaistuspotkua", swedish: "straff", category: "Fotboll", pronunciation: "RAHN-gais-tus-pot-ku"},
+                {finnish: "sisäänheitto", swedish: "inkast", category: "Fotboll", pronunciation: "SI-sa-an-heit-to"},
+                {finnish: "paitsio", swedish: "offside", category: "Fotboll", pronunciation: "PAIT-si-o"},
+                {finnish: "keltainen kortti", swedish: "gult kort", category: "Fotboll", pronunciation: "KEL-tai-nen kort-ti"},
+                {finnish: "punainen kortti", swedish: "rött kort", category: "Fotboll", pronunciation: "PU-nai-nen kort-ti"},
+                {finnish: "pelikieltoa", swedish: "utvisning", category: "Fotboll", pronunciation: "PEH-li-kiel-to"},
+                {finnish: "puoliaikaa", swedish: "halvlek", category: "Fotboll", pronunciation: "PUO-li-ai-kah"},
+                {finnish: "lisäaikaa", swedish: "tilläggstid", category: "Fotboll", pronunciation: "LI-sa-ai-kah"},
+                {finnish: "jatkoaikaa", swedish: "förlängning", category: "Fotboll", pronunciation: "YAT-ko-ai-kah"},
+                {finnish: "rangaistuspotkukisa", swedish: "straffläggning", category: "Fotboll", pronunciation: "RAHN-gais-tus-pot-ku-ki-sah"},
+                {finnish: "valmentaja", swedish: "tränare", category: "Fotboll", pronunciation: "VAHL-men-tah-yah"},
+                {finnish: "kapteeni", swedish: "kapten", category: "Fotboll", pronunciation: "kahp-TEE-ni"},
+                {finnish: "vaihtopenkki", swedish: "bänk", category: "Fotboll", pronunciation: "VAIH-to-penk-ki"},
+                {finnish: "yleisö", swedish: "publik", category: "Fotboll", pronunciation: "Y-lei-sur"},
+                {finnish: "katsomo", swedish: "läktare", category: "Fotboll", pronunciation: "KAHT-so-mo"},
+                {finnish: "kotijoukkue", swedish: "hemmalag", category: "Fotboll", pronunciation: "KO-ti-youk-kueh"},
+                {finnish: "vierasjoukkue", swedish: "bortalag", category: "Fotboll", pronunciation: "VIEH-rahs-youk-kueh"},
+                {finnish: "tulos", swedish: "resultat", category: "Fotboll", pronunciation: "TU-los"},
+                {finnish: "voitto", swedish: "vinst", category: "Fotboll", pronunciation: "VOIT-to"},
+                {finnish: "häviö", swedish: "förlust", category: "Fotboll", pronunciation: "HA-vi-ur"},
+                {finnish: "tasapeli", swedish: "oavgjort", category: "Fotboll", pronunciation: "TAH-sah-peh-li"},
+                {finnish: "pisteet", swedish: "poäng", category: "Fotboll", pronunciation: "PIS-teet"},
+                {finnish: "sarjataulukko", swedish: "tabell", category: "Fotboll", pronunciation: "SAHR-yah-tau-luk-ko"},
+                {finnish: "mestaruus", swedish: "mästerskap", category: "Fotboll", pronunciation: "MES-tah-ruus"},
+                {finnish: "turnaus", swedish: "turnering", category: "Fotboll", pronunciation: "TUR-naus"},
+                {finnish: "finaali", swedish: "final", category: "Fotboll", pronunciation: "fi-NAH-li"},
+                {finnish: "välierä", swedish: "semifinal", category: "Fotboll", pronunciation: "VA-li-eh-ra"},
+                {finnish: "neljännesvälierä", swedish: "kvartsfinal", category: "Fotboll", pronunciation: "NEL-yan-nes-va-li-eh-ra"},
+                {finnish: "maailmanmestaruus", swedish: "VM", category: "Fotboll", pronunciation: "MAH-il-mahn-mes-tah-ruus"},
+                {finnish: "EM-kisat", swedish: "EM", category: "Fotboll", pronunciation: "EH-em-ki-saht"}
+            ]
+        };
+
+        let gameState = {
+            selectedCategory: null,
+            deck: [],
+            currentCard: null,
+            totalGuesses: 0,
+            correctAnswers: 0,
+            completedCards: 0,
+            currentOptions: [],
+            correctOptionIndex: 0,
+            answered: false
+        };
+
+        function selectCategory(category) {
+            gameState.selectedCategory = category;
+            const categoryNames = {
+                boating: "Båtsport & Segling",
+                fishing: "Fiske",
+                soccer: "Fotboll"
+            };
+            
+            document.getElementById('headerSubtitle').textContent = categoryNames[category];
+            document.getElementById('categoryScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            
+            initializeGame();
+        }
+
+        function showCategorySelection() {
+            document.getElementById('categoryScreen').style.display = 'block';
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('completionScreen').classList.remove('show');
+            document.getElementById('headerSubtitle').textContent = 'Välj din kategori';
+            
+            // Reset game state
+            gameState = {
+                selectedCategory: null,
+                deck: [],
+                currentCard: null,
+                totalGuesses: 0,
+                correctAnswers: 0,
+                completedCards: 0,
+                currentOptions: [],
+                correctOptionIndex: 0,
+                answered: false
+            };
+        }
+
+        function initializeGame() {
+            if (!gameState.selectedCategory) return;
+            
+            // Create a shuffled deck from selected category
+            gameState.deck = [...vocabularies[gameState.selectedCategory]].sort(() => Math.random() - 0.5);
+            gameState.totalGuesses = 0;
+            gameState.correctAnswers = 0;
+            gameState.completedCards = 0;
+            gameState.answered = false;
+            
+            nextQuestion();
+        }
+
+        function generateOptions(correctAnswer) {
+            // Get all possible wrong answers from the selected category
+            const wrongAnswers = vocabularies[gameState.selectedCategory].filter(item => item.swedish !== correctAnswer.swedish);
+            
+            // Randomly select 2 wrong answers
+            const selectedWrong = [];
+            while (selectedWrong.length < 2 && selectedWrong.length < wrongAnswers.length) {
+                const randomWrong = wrongAnswers[Math.floor(Math.random() * wrongAnswers.length)];
+                if (!selectedWrong.some(item => item.swedish === randomWrong.swedish)) {
+                    selectedWrong.push(randomWrong);
+                }
+            }
+            
+            // Create options array and shuffle
+            const options = [correctAnswer, ...selectedWrong];
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            // Find correct answer index after shuffle
+            const correctIndex = options.findIndex(option => option.swedish === correctAnswer.swedish);
+            
+            return { options, correctIndex };
+        }
+
+        function nextQuestion() {
+            if (gameState.deck.length === 0) {
+                showCompletion();
+                return;
+            }
+            
+            // Reset question state
+            gameState.answered = false;
+            gameState.currentCard = gameState.deck[0];
+            
+            const { options, correctIndex } = generateOptions(gameState.currentCard);
+            gameState.currentOptions = options;
+            gameState.correctOptionIndex = correctIndex;
+            
+            // Update UI - Show Finnish word, ask for Swedish translation
+            document.getElementById('categoryTag').textContent = gameState.currentCard.category;
+            document.getElementById('finnishWord').textContent = gameState.currentCard.finnish;
+            document.getElementById('pronunciation').textContent = `[${gameState.currentCard.pronunciation}]`;
+            
+            // Set up options with Swedish translations
+            options.forEach((option, index) => {
+                const optionBtn = document.getElementById(`option${index}`);
+                optionBtn.textContent = option.swedish;
+                optionBtn.className = 'option-btn';
+                optionBtn.disabled = false;
+            });
+            
+            // Hide feedback
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            
+            updateStats();
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (gameState.answered) return;
+            
+            gameState.answered = true;
+            gameState.totalGuesses++;
+            
+            const isCorrect = selectedIndex === gameState.correctOptionIndex;
+            const feedback = document.getElementById('feedback');
+            const selectedBtn = document.getElementById(`option${selectedIndex}`);
+            const correctBtn = document.getElementById(`option${gameState.correctOptionIndex}`);
+            
+            // Disable all options
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`option${i}`).disabled = true;
+            }
+            
+            if (isCorrect) {
+                gameState.correctAnswers++;
+                gameState.completedCards++;
+                gameState.deck.shift(); // Remove from deck
+                
+                selectedBtn.classList.add('correct');
+                feedback.textContent = '🎉 Rätt! Bra jobbat!';
+                feedback.classList.add('show', 'correct');
+            } else {
+                // Show correct answer
+                correctBtn.classList.add('correct');
+                selectedBtn.classList.add('incorrect');
+                
+                feedback.textContent = `❌ Inte riktigt. Rätta svaret är "${gameState.currentOptions[gameState.correctOptionIndex].swedish}"`;
+                feedback.classList.add('show', 'incorrect');
+                
+                // Reshuffle card back into deck (but not at the front)
+                gameState.deck.shift();
+                const insertPosition = Math.floor(Math.random() * (gameState.deck.length / 2)) + 3;
+                gameState.deck.splice(Math.min(insertPosition, gameState.deck.length), 0, gameState.currentCard);
+            }
+            
+            // Automatically proceed to next question after 1 second
+            setTimeout(() => {
+                nextQuestion();
+            }, 1000);
+            
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('cardsRemaining').textContent = gameState.deck.length;
+            
+            // Update progress bar
+            const totalWords = vocabularies[gameState.selectedCategory].length;
+            const progress = (gameState.completedCards / totalWords) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showCompletion() {
+            const accuracy = Math.round((gameState.correctAnswers / gameState.totalGuesses) * 100);
+            
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('completionScreen').classList.add('show');
+            
+            const categoryNames = {
+                boating: "Båtsport & Segling",
+                fishing: "Fiske", 
+                soccer: "Fotboll"
+            };
+            
+            document.getElementById('completionMessage').textContent = 
+                `Du har mästrat alla 50 ${categoryNames[gameState.selectedCategory]} ord!`;
+            
+            document.getElementById('finalGuesses').textContent = gameState.totalGuesses;
+            document.getElementById('finalCorrect').textContent = gameState.correctAnswers;
+            
+            // Big accuracy reveal with color coding
+            const accuracyElement = document.getElementById('accuracyReveal');
+            accuracyElement.textContent = `Din träffsäkerhet: ${accuracy}%`;
+            
+            if (accuracy >= 90) {
+                accuracyElement.className = 'accuracy-reveal accuracy-excellent';
+            } else if (accuracy >= 80) {
+                accuracyElement.className = 'accuracy-reveal accuracy-good';
+            } else if (accuracy >= 70) {
+                accuracyElement.className = 'accuracy-reveal accuracy-okay';
+            } else {
+                accuracyElement.className = 'accuracy-reveal accuracy-practice';
+            }
+            
+            // Performance message in Swedish
+            let message = '';
+            if (accuracy >= 90) {
+                message = '🌟 Fantastiskt! Du behärskar verkligen dessa ord!';
+            } else if (accuracy >= 80) {
+                message = '👏 Bra jobbat! Du har en solid grund inom detta ämne!';
+            } else if (accuracy >= 70) {
+                message = '👍 Bra arbete! Du är på god väg att bemästra finska!';
+            } else if (accuracy >= 60) {
+                message = '💪 Bra försök! Fortsätt träna så kommer du att förbättras mycket!';
+            } else {
+                message = '📚 Bra början! Dessa ord kommer att bli lättare med mer träning!';
+            }
+            
+            document.getElementById('performanceMessage').textContent = message;
+        }
+
+        function restartCurrentCategory() {
+            if (gameState.selectedCategory) {
+                initializeGame();
+                document.getElementById('completionScreen').classList.remove('show');
+                document.getElementById('gameScreen').style.display = 'block';
+            }
+        }
+
+        // Initialize by showing category selection
+        showCategorySelection();
+    </script>
+</body>
+</html>
